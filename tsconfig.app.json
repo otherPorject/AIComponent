@@ -1,0 +1,28 @@
+{
+  "extends": "@vue/tsconfig/tsconfig.dom.json",
+  "include": [
+    ".storybook/*",
+    "./vite.config.*",
+    "env.d.ts",
+    "src/**/*",
+    "src/**/*.vue",
+    ".storybook/.stories/*",
+    "./.docs/.vitepress/*",
+    "./.docs/.vitepress/**/*"
+  ],
+  "exclude": [
+    "src/**/__tests__/*",
+    ".docs/.vitepress/cache/**/*"
+  ],
+  "compilerOptions": {
+    "composite": true,
+    "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.app.tsbuildinfo",
+    "noImplicitAny": false,
+    "baseUrl": ".",
+    "paths": {
+      "@/*": [
+        "./src/*"
+      ]
+    }
+  }
+}

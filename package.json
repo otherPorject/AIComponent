@@ -1,0 +1,43 @@
+{
+    "name": "ts-chat",
+    "version": "0.0.0",
+    "private": true,
+    "type": "module",
+    "publishConfig": {
+        "registry": "http://pms.trasen.cn:8008/repository/local-npm/"
+    },
+    "scripts": {
+        "dev": "vite",
+        "build:component-only": "vite build",
+        "build:component": "vite build & npm publish",
+        "build:web": "vite build --mode web & node build.mjs",
+        "preview": "vite preview",
+        "lint": "eslint . --fix",
+        "format": "prettier --write src/"
+    },
+    "dependencies": {
+        "@tdesign-vue-next/chat": "^0.1.4",
+        "vue": "^3.5.13"
+    },
+    "devDependencies": {
+        "@eslint/js": "^9.20.0",
+        "@tsconfig/node22": "^22.0.1",
+        "@types/node": "^22.14.0",
+        "@vitejs/plugin-vue": "^5.2.1",
+        "@vue/eslint-config-prettier": "^10.2.0",
+        "@vue/tsconfig": "^0.7.0",
+        "commitlint": "^19.8.0",
+        "compressing": "^1.10.1",
+        "eslint": "^9.20.1",
+        "eslint-plugin-vue": "^9.32.0",
+        "husky": "^9.1.7",
+        "lint-staged": "^15.5.0",
+        "prettier": "^3.5.1",
+        "sass": "^1.86.0",
+        "sass-loader": "^16.0.5",
+        "unplugin-auto-import": "^19.1.1",
+        "unplugin-vue-components": "^28.4.1",
+        "vite": "^6.1.0",
+        "vite-plugin-vue-devtools": "^7.7.2"
+    }
+}

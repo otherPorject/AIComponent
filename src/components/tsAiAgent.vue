@@ -163,7 +163,7 @@ export default {
                         type: 'dify',
                         apiKey: this.apiOptions.apiKey,
                         data: {
-                            inputs: {},
+                            inputs: this.apiOptions.inputs || {},
                             query: inputValue,
                             response_mode: 'streaming',
                             conversation_id: '',
@@ -187,6 +187,7 @@ export default {
                     onComplete: (isOk, msg) => {
                         if (!isOk) {
                             lastItem.role = 'error';
+                            // TODO: 传出去
                             lastItem.content = msg;
                         }
                         // 控制终止按钮

@@ -31,7 +31,7 @@ export default defineConfig(({ mode }) => {
         };
     }
     return {
-        base: mode == 'web' ? '/smartCode' : '/',
+        base: '/smartCode',
         plugins: [vue()],
         build,
         resolve: {
@@ -41,6 +41,19 @@ export default defineConfig(({ mode }) => {
         },
         server: {
             proxy: {
+                '/ts-bs-his/ts-pfs-emr': {
+                    target: 'http://192.168.209.103:9099',
+                    secure: false,
+                    changeOrigin: true,
+                    configure: (proxy) => {
+                        const encryptedList = ['appId', 'randomStr', 'timestamp', 'version', 'sign']
+                        proxy.on('proxyReq', function(proxyReq, req) {
+                            encryptedList.forEach((item) => {
+                                proxyReq.setHeader(item, req.headers[item.toLocaleLowerCase()] || req.headers[item])
+                            })
+                        })
+                    }
+                },
                 '/tansenAI-dify': {
                     target: 'http://192.168.208.29:5001/v1',
                     secure: true,

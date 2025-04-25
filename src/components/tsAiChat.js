@@ -1,9 +1,9 @@
 class TsAiAgent {
-    constructor() {
+    constructor () {
         this.controller = new AbortController();
     }
 
-    async chatStream(options = {}) {
+    async chatStream (options = {}) {
         this.type = options.type;
         try {
             const response = await fetch(options.url, {
@@ -24,7 +24,7 @@ class TsAiAgent {
         }
     }
 
-    async processStream(response, options) {
+    async processStream (response, options) {
         let self = this;
         const { onMessage, onComplete } = options;
         if (!response.ok) {
@@ -38,7 +38,7 @@ class TsAiAgent {
         if (!reader) return;
         const bufferArr = [];
 
-        reader.read().then(function processText({ done, value }) {
+        reader.read().then(function processText ({ done, value }) {
             if (done) {
                 onComplete?.(true);
                 return;
@@ -69,12 +69,12 @@ class TsAiAgent {
             reader.read().then(processText);
         });
     }
-    stopStream() {
+
+    stopStream () {
         this.reader && this.reader.cancel();
         this.controller && this.controller.abort();
     }
 }
-
 
 export default TsAiAgent;
 

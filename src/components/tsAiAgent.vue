@@ -88,6 +88,11 @@ export default {
             isChatVisible: false
         };
     },
+    expose:{
+        inputEnter (inputValue) {
+            this.inputEnter(inputValue)
+        }
+    },
     methods: {
         backBottom() {
             this.chatRef.scrollToBottom({

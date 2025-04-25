@@ -16,7 +16,8 @@ service.interceptors.request.use(
     config => {
         config.headers['token'] = localStorage.getItem('token')||"3b2ad6c9-4d33-4d08-b00b-35e10cadc75e";
         // his6.0接入网关请求，后期可能会再增加其他接口前缀
-        const appId = window.appId || 'trasen';
+        const appId = localStorage.getItem('appId') || sessionStorage.getItem('appId')||window.appId;
+        const HISSignatureKey=localStorage.getItem('HISSignatureKey')||sessionStorage.getItem('HISSignatureKey')||window.HISSignatureKey
         let encrypted = {
             appId,
             randomStr: uuid(6),
@@ -26,7 +27,8 @@ service.interceptors.request.use(
         const queryString = Object.entries(encrypted)
             .map(([key, value]) => `${encodeURIComponent(key)}=${encodeURIComponent(value)}`)
             .join('&');
-        const finalString = `${queryString}&${window.HISSignatureKey || 'e1ec93ae-e25f-434d-8a64-f70116430a33'}`;
+        console.log('AI签名',HISSignatureKey,appId);
+        const finalString = `${queryString}&${HISSignatureKey || 'e1ec93ae-e25f-434d-8a64-f70116430a33'}`;
         const signature = CryptoJS.MD5(finalString).toString();
         encrypted.sign = signature.toUpperCase();
         Object.assign(config.headers, encrypted);

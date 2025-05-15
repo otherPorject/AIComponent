@@ -63,6 +63,7 @@ const apiOptions = ref({
     apiKey: 'app-swudglBXoNWB3haZZcit5jKB',
     inputs: inputs.value
 });
+
 watch(
     () => {
         return apiKey.value;

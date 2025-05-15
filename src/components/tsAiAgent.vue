@@ -42,7 +42,7 @@
 <script>
 import avatar from '../assets/avatar.png';
 import { Chat, ChatItem, ChatInput, ChatAction } from '@tdesign-vue-next/chat';
-import 'tdesign-vue-next/es/style/index.css';
+import '@tdesign-vue-next/chat/es/style/index.css';
 import tsAiChat from './tsAiChat.js';
 import DragSide from './dragSide.vue';
 

@@ -33,7 +33,7 @@
                     </t-chat-item>
                 </template>
                 <template #footer>
-                    <t-chat-input :stop-disabled="isStreamLoad" @send="inputEnter" @stop="onStop"> </t-chat-input>
+                    <t-chat-input :stop-disabled="isStreamLoad" @send="sendMessage" @stop="onStop"></t-chat-input>
                 </template>
             </t-chat>
         </div>
@@ -42,9 +42,10 @@
 <script>
 import avatar from '../assets/avatar.png';
 import { Chat, ChatItem, ChatInput, ChatAction } from '@tdesign-vue-next/chat';
-import '@tdesign-vue-next/chat/es/style/index.css';
+import 'tdesign-vue-next/es/style/index.css';
 import tsAiChat from './tsAiChat.js';
 import DragSide from './dragSide.vue';
+
 export default {
     name: 'TsChat',
     components: {
@@ -88,9 +89,9 @@ export default {
             isChatVisible: false
         };
     },
-    expose:{
-        inputEnter (inputValue) {
-            this.inputEnter(inputValue)
+    expose: {
+        inputEnter(inputValue) {
+            this.inputEnter(inputValue);
         }
     },
     methods: {
@@ -108,6 +109,10 @@ export default {
                 this.inputEnter(userQuery);
             }
             this.$emit('operation', type, options, this.chatList[options.index + 2]);
+        },
+        sendMessage(inputValue) {
+            this.$emit('send', inputValue);
+            this.inputEnter(inputValue);
         },
         inputEnter(inputValue) {
             if (this.isStreamLoad) {
@@ -144,7 +149,7 @@ export default {
                 // 调用 chatStream 方法获取流
                 this.tsAiChat = new tsAiChat();
                 let options = {};
-                if (this.apiOptions.type == 'ollama') {
+                if (this.apiOptions.type == 'ollama' || this.apiOptions.type == 'vllm') {
                     options = {
                         url: this.apiOptions.url || 'http://192.168.18.229:11434/api/chat',
                         type: 'ollama',
@@ -186,18 +191,25 @@ export default {
                         if (this.apiOptions.type == 'ollama') {
                             lastItem.content += res.message.content;
                         } else if (this.apiOptions.type == 'dify') {
-                            lastItem.content += res.answer;
+                            if (res.event == 'message') {
+                                lastItem.content += res.answer;
+                            }
+                        } else if (this.apiOptions.type == 'vllm') {
+                            const content = res?.choices?.[0].delta.content;
+                            if (content) {
+                                lastItem.content += content;
+                            }
                         }
                     },
                     onComplete: (isOk, msg) => {
                         if (!isOk) {
                             lastItem.role = 'error';
-                            // TODO: 传出去
                             lastItem.content = msg;
                         }
                         // 控制终止按钮
                         this.isStreamLoad = false;
                         this.loading = false;
+                        this.$emit('complete', lastItem);
                     }
                 });
             } catch (error) {
@@ -224,14 +236,17 @@ export default {
         border-radius: 4px;
         margin-bottom: 20px;
         position: relative;
+
         .chat-header-logo {
             width: 30px;
             height: 30px;
             margin: 0 10px;
         }
+
         .chat-header-title {
             font-size: 22px;
         }
+
         .chat-header-close {
             position: absolute;
             right: 12px;
@@ -240,6 +255,7 @@ export default {
             font-size: 32px;
         }
     }
+
     .chat-content {
         flex: 1;
         overflow: hidden;
@@ -253,6 +269,7 @@ export default {
         }
     }
 }
+
 .chat-container-fixed {
     position: fixed;
     top: 20px;

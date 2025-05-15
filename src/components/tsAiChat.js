@@ -1,16 +1,16 @@
 class TsAiAgent {
-    constructor () {
+    constructor() {
         this.controller = new AbortController();
     }
 
-    async chatStream (options = {}) {
+    async chatStream(options = {}) {
         this.type = options.type;
         try {
             const response = await fetch(options.url, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': options.type == 'dify' ? `Bearer ${options.apiKey}` : ''
+                    Authorization: options.type == 'dify' ? `Bearer ${options.apiKey}` : ''
                 },
                 body: JSON.stringify(options.data),
                 signal: this.controller.signal
@@ -20,11 +20,11 @@ class TsAiAgent {
             return {
                 ok: false,
                 statusText: error.message
-            }
+            };
         }
     }
 
-    async processStream (response, options) {
+    async processStream(response, options) {
         const { onMessage, onComplete } = options;
         if (!response.ok) {
             onComplete?.(false, response.statusText);
@@ -65,6 +65,11 @@ class TsAiAgent {
                                 onMessage(json);
                             }
                         }
+                    } else if (this.type == 'vllm') {
+                        if (line.startsWith('data:') && line.endsWith('}')) {
+                            const json = JSON.parse(line.slice(5).trim());
+                            onMessage(json);
+                        }
                     }
                 } catch (err) {
                     console.warn('JSON 解析失败:', err, '原始数据:', line);
@@ -73,11 +78,10 @@ class TsAiAgent {
         }
     }
 
-    stopStream () {
+    stopStream() {
         this.reader && this.reader.cancel();
         this.controller && this.controller.abort();
     }
 }
 
 export default TsAiAgent;
-

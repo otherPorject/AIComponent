@@ -11,7 +11,8 @@
             </slot>
         </div>
         <div class="chat-content">
-            <t-chat ref="chatRef" layout="both" style="height: 100%" :clear-history="chatList.length > 0 && !isStreamLoad" @clear="clearConfirm">
+            <t-chat ref="chatRef" layout="both" style="height: 100%"
+                    :clear-history="chatList.length > 0 && !isStreamLoad" @clear="clearConfirm">
                 <template v-for="(item, index) in chatList" :key="index">
                     <t-chat-item
                         :avatar="item.avatar"
@@ -74,12 +75,15 @@ export default {
             default: false
         }
     },
-    created() {
+    created () {
         if (!this.drag) {
             this.isChatVisible = true;
         }
     },
-    data() {
+    mounted () {
+        window.sendMessage = query => this.inputEnter(query);
+    },
+    data () {
         return {
             loading: false,
             isStreamLoad: false,
@@ -90,31 +94,31 @@ export default {
         };
     },
     expose: {
-        inputEnter(inputValue) {
+        inputEnter (inputValue) {
             this.inputEnter(inputValue);
         }
     },
     methods: {
-        backBottom() {
+        backBottom () {
             this.chatRef.scrollToBottom({
-                behavior: 'smooth'
-            });
+                                            behavior: 'smooth'
+                                        });
         },
-        clearConfirm() {
+        clearConfirm () {
             this.chatList = [];
         },
-        handleOperation(type, options) {
+        handleOperation (type, options) {
             if (type === 'replay') {
                 const userQuery = this.chatList[options.index + 1].content;
                 this.inputEnter(userQuery);
             }
             this.$emit('operation', type, options, this.chatList[options.index + 2]);
         },
-        sendMessage(inputValue) {
+        sendMessage (inputValue) {
             this.$emit('send', inputValue);
             this.inputEnter(inputValue);
         },
-        inputEnter(inputValue) {
+        inputEnter (inputValue) {
             if (this.isStreamLoad) {
                 return;
             }
@@ -136,11 +140,11 @@ export default {
             this.chatList.unshift(params2);
             this.handleData(inputValue);
         },
-        onStop() {
+        onStop () {
             this.tsAiChat.stopStream();
             this.loading = false;
         },
-        async handleData(inputValue) {
+        async handleData (inputValue) {
             this.loading = true;
             this.isStreamLoad = true;
             const lastItem = this.chatList[0];
@@ -152,18 +156,18 @@ export default {
                 if (this.apiOptions.type == 'ollama' || this.apiOptions.type == 'vllm') {
                     options = {
                         url: this.apiOptions.url || 'http://192.168.18.229:11434/api/chat',
-                        type: 'ollama',
+                        type: this.apiOptions.type,
                         data: {
                             model: this.apiOptions.model || 'deepseek-r1:32b',
                             messages: this.apiOptions.sysMsg
                                 ? [
-                                      { role: 'system', content: this.apiOptions.sysMsg },
-                                      { role: 'user', content: inputValue }
-                                  ]
+                                    { role: 'system', content: this.apiOptions.sysMsg },
+                                    { role: 'user', content: inputValue }
+                                ]
                                 : [
-                                      { role: 'system', content: '你是一个医疗专家，请根据用户的问题给出专业的回答。' },
-                                      { role: 'user', content: inputValue }
-                                  ],
+                                    { role: 'system', content: '你是一个医疗专家，请根据用户的问题给出专业的回答。' },
+                                    { role: 'user', content: inputValue }
+                                ],
                             stream: true
                         }
                     };

@@ -41,7 +41,7 @@ const apiOptions = computed(() => {
         // };
         return {
             type: AIType,
-            url: 'http://192.168.3.177:8000/v1/chat/completions',
+            url: 'http://192.168.1.177:8000/v1/chat/completions',
             model: 'Qwen3:8B',
         };
     }

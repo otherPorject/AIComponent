@@ -6,7 +6,7 @@
 </template>
 <script setup lang="ts">
 import { tsAiAgent } from '@/components/index';
-import { nextTick, onMounted, onBeforeUnmount, ref, watch } from 'vue';
+import { onMounted, onBeforeUnmount, ref, watch, computed } from 'vue';
 import { queryFileAssistantDto } from '@/apis/index';
 import { ElMessage } from 'element-plus';
 
@@ -55,15 +55,37 @@ async function handlerMessage(event) {
         tsAiAgentRef.value?.inputEnter(data.query||'病历书写辅助');
     }
 }
+interface propsType {
+    type: string;
+    apiKey: string;
+    showDebugger: boolean;
+}
 
-const apiOptions = ref({
+const props = withDefaults(defineProps<propsType>(), {
     type: 'dify',
-    url: '/tansenAI-dify/chat-messages',
-    stream: true,
-    apiKey: 'app-swudglBXoNWB3haZZcit5jKB',
-    inputs: inputs.value
+    sysMsg: '你是一个医疗专家，请根据用户的问题给出专业的回答。',
+    showDebugger: false
 });
 
+const apiOptions = computed(() => {
+    const { type, apiKey } = props;
+    const { AIType = type, AIApiKey = apiKey, AIStream = true } = window as any;
+    if (AIType == 'dify') {
+        return {
+            type: 'dify',
+            url: '/tansenAI-dify/chat-messages',
+            stream: true,
+            inputs: inputs.value,
+            apiKey: AIApiKey
+        };
+    } else {
+        return {
+            type: AIType,
+            url: 'http://192.168.1.177:8000/v1/chat/completions',
+            model: 'Qwen3:8B',
+        };
+    }
+});
 watch(
     () => {
         return apiKey.value;
